@@ -1,6 +1,6 @@
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdIn;
-import edu.princeton.cs.algs4.Random;
+import edu.princeton.cs.algs4.StdOut;
 
 public class Percolation {
 
@@ -8,13 +8,15 @@ public class Percolation {
     private int[][] parent;
     private int[][] size;
     private int count;
+    private int matrix_n;
 
     Percolation (int n) {
 
 	matrix = new int[n][n];
 	parent = new int[n][n];
-	size = new size[n][n];
+	size = new int[n][n];
 	count = n*n;
+	matrix_n = n;
 
 	for (int i = 0; i < n; i++) {
 	    for (int j = 0; j < n; j++) {
@@ -42,26 +44,11 @@ public class Percolation {
 	return find(row1, col1) == find(row2, col2);
     }
 
-    public boolean validateUnion (int row1, int col1, int row2, int col2) {
-	int diff_row = row1 - row2;
-	int diff_col = col1 - col2;
-
-	if (isOpen(row1, col1) && isOpen(row2, col2)) {
-	    if (diff_row == 0 && (diff_coll == 1 || diff_col == -1))
-		return true;
-	    if (diff_col == 0 && (diff_row == 1 || diff_row == -1))
-		return true;
-        }
-        else
-	    return false;
-    }
-
     public void union (int row1, int col1, int row2, int col2) {
 	int root1 = find(row1, col1);
 	int root2 = find(row2, col2);
 
 	if (root1 == root2) return;
-	if (!validateUnion(row1, col1, row2, col2)) return;
 	
 	if (size[row1][col1] < size[row2][col2]) {
 	    parent[row1][col1] = root2;
@@ -75,20 +62,96 @@ public class Percolation {
 	count--;
     }
 
+    public boolean validate (int row, int col) {
+	if (row < 0 || row > matrix_n - 1 || col < 0 || col > matrix_n - 1)
+	    return false;
+	else
+	    return true;
+    }
+
     public void open (int row, int col) {
+
+	boolean full = false;
+	
+	if (!validate(row, col)) return;
+
 	if (matrix[row][col] == 0) {
 	    if (row == 0)
 		matrix [row][col] = 2;
 	    else
 		matrix [row][col] = 1;
 	}
+	
+	if (isOpen(row, col + 1) || (full = isFull(row, col + 1))) {
+	    union(row, col + 1, row, col);
+	    if (full)
+		matrix[row][col] = 2;
+	}
+
+	if (isOpen(row, col - 1) || (full = isFull(row, col - 1))) {
+	    union(row, col - 1, row, col);
+	    if (full)
+		matrix[row][col] = 2;
+	}
+
+	if (isOpen(row + 1, col) || (full = isFull(row + 1, col))) {
+	    union(row + 1, col, row, col);
+	    if (full)
+		matrix[row][col] = 2;
+	}
+
+	if (isOpen(row - 1, col) || (full = isFull(row - 1, col))) {
+	    union(row - 1, col, row, col);
+	    if (full)
+		matrix[row][col] = 2;
+	}
     }
 
     public boolean isFull (int row, int col) {
-	
+
+	if (!validate(row, col)) return false;
+	return matrix[row][col] == 2;
     }
 
     public boolean isOpen (int row, int col) {
 
+	if (!validate(row, col)) return false;
+	return matrix[row][col] == 1;
     }
+
+    public void printa(){
+	for (int i = 0; i < matrix_n; i++) {
+	    for (int j = 0; j < matrix_n; j++) {
+		StdOut.print(parent[i][j] + " ");
+	    }
+	    StdOut.println();
+	}
+	StdOut.println();
+
+	for (int i = 0; i < matrix_n; i++) {
+	    for (int j = 0; j < matrix_n; j++) {
+		StdOut.print(matrix[i][j] + " ");
+	    }
+	    StdOut.println();
+	}
+    }
+
+    public static void main (String[] args) {
+
+	Percolation perc = new Percolation(StdIn.readInt());
+	int i, j;
+	
+	while (!StdIn.isEmpty()) {
+	    StdOut.println();
+	    i = StdIn.readInt();
+	    j = StdIn.readInt();
+	    perc.open(i,j);
+	    perc.printa();
+	    
+	}
+
+    }
+
 }
+
+
