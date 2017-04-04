@@ -81,29 +81,31 @@ public class Percolation {
 	    else
 		matrix [row][col] = 1;
 	}
+
+	full = isFull(row, col);
 	
-	if (isOpen(row, col + 1) || (full = isFull(row, col + 1))) {
+	if (isOpen(row, col + 1) || isFull(row, col + 1)) {
 	    union(row, col + 1, row, col);
 	    if (full)
-		matrix[row][col] = 2;
+		matrix[row][col + 1] = 2;
 	}
 
-	if (isOpen(row, col - 1) || (full = isFull(row, col - 1))) {
+	if (isOpen(row, col - 1) || isFull(row, col - 1)) {
 	    union(row, col - 1, row, col);
 	    if (full)
-		matrix[row][col] = 2;
+		matrix[row][col - 1] = 2;
 	}
 
-	if (isOpen(row + 1, col) || (full = isFull(row + 1, col))) {
+	if (isOpen(row + 1, col) || isFull(row + 1, col)) {
 	    union(row + 1, col, row, col);
 	    if (full)
-		matrix[row][col] = 2;
+		matrix[row + 1][col] = 2;
 	}
 
-	if (isOpen(row - 1, col) || (full = isFull(row - 1, col))) {
+	if (isOpen(row - 1, col) || isFull(row - 1, col)) {
 	    union(row - 1, col, row, col);
 	    if (full)
-		matrix[row][col] = 2;
+		matrix[row - 1][col] = 2;
 	}
     }
 
